@@ -110,7 +110,7 @@
             this.Controls.Add(this.selectFolderButton);
             this.Controls.Add(this.selectedFolderLabel);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Remove Raws";
             this.ResumeLayout(false);
             this.PerformLayout();
 

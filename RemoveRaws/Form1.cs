@@ -21,6 +21,23 @@ namespace RemoveRaws
 
         private void selectFolderButton_Click(object sender, EventArgs e)
         {
+            SelectFolder();
+            ScanFolder();
+        }
+
+        private void scanButton_Click(object sender, EventArgs e)
+        {
+            ScanFolder();
+        }
+
+        private void removeButton_Click(object sender, EventArgs e)
+        {
+            RemoveSelected();
+            ScanFolder();
+        }
+
+        private void SelectFolder()
+        {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
             if (fbd.ShowDialog() == DialogResult.OK)
             {
@@ -30,33 +47,28 @@ namespace RemoveRaws
             }
         }
 
-        private void scanButton_Click(object sender, EventArgs e)
+        private void ScanFolder()
         {
-            string folderPath = selectedFolderLabel.Text;
-            if (!Directory.Exists(folderPath))
-            {
-                MessageBox.Show("Folder does not exist.");
-                return;
-            }
             fileListBox.Items.Clear();
+            List<string> filePaths = GetFilesToScan();
+            HashSet<string> extensions = GetExtensionsToRemove();
 
-            List<string> filePaths = new List<string>(Directory.GetFiles(folderPath));
-            filePaths.Sort();
             HashSet<string> fileNames = new HashSet<string>();
             foreach (string filePath in filePaths)
-                if (Path.GetExtension(filePath).ToLower() != ".cr2")
+                if (!extensions.Contains(Path.GetExtension(filePath).ToLower()))
                     fileNames.Add(Path.GetFileNameWithoutExtension(filePath));
 
             foreach (string filePath in filePaths)
             {
                 string fileName = Path.GetFileNameWithoutExtension(filePath);
                 string extension = Path.GetExtension(filePath);
-                bool remove = extension.ToLower() == ".cr2" && !fileNames.Contains(fileName);
+                bool remove = extensions.Contains(extension.ToLower()) && !fileNames.Contains(fileName);
                 fileListBox.Items.Add(Path.GetFileName(filePath), remove);
             }
+            removeButton.Enabled = true;
         }
 
-        private void removeButton_Click(object sender, EventArgs e)
+        private void RemoveSelected()
         {
             string folderPath = selectedFolderLabel.Text;
             if (!Directory.Exists(folderPath))
@@ -69,12 +81,27 @@ namespace RemoveRaws
                 string path = Path.Combine(folderPath, fileName);
                 File.Delete(path);
             }
+
+        }
+
+        private List<string> GetFilesToScan()
+        {
+            string folderPath = selectedFolderLabel.Text;
+            List<string> filePaths = new List<string>(Directory.GetFiles(folderPath));
+            filePaths.Sort();
+            return filePaths;
         }
 
         private HashSet<string> GetExtensionsToRemove()
         {
+            HashSet<string> extensions = new HashSet<string>();
+
             string unformattedExtensions = fileTypesTextBox.Text;
-            return null;
+            foreach (string extension in unformattedExtensions.Split(','))
+            {
+                extensions.Add("." + extension.ToLower().Trim());
+            }
+            return extensions;
         }
     }
 }
