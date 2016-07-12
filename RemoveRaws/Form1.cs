@@ -91,17 +91,6 @@ namespace RemoveRaws
             filePaths.Sort();
             return filePaths;
         }
-
-        private HashSet<string> GetExtensionsToRemove()
-        {
-            HashSet<string> extensions = new HashSet<string>();
-
-            string unformattedExtensions = fileTypesTextBox.Text;
-            foreach (string extension in unformattedExtensions.Split(','))
-            {
-                extensions.Add("." + extension.ToLower().Trim());
-            }
-            return extensions;
-        }
+        
     }
 }
