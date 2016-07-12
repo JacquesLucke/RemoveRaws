@@ -102,7 +102,6 @@ namespace RemoveRaws
                 extensions.Add("." + extension.ToLower().Trim());
             }
             return extensions;
-            // Hello World
         }
     }
 }
